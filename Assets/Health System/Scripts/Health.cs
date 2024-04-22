@@ -5,14 +5,21 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
+    [Header("Options")]
+    [SerializeField] public bool UseShield;
+    [SerializeField] public bool UseArmor;
+    [SerializeField] public bool UseEvents;
+
+    [Header("Health")]
     [SerializeField] private float MaxHealth;
-    [SerializeField] private float MaxShield;
-    [SerializeField] private float Armor;
-    [SerializeField] private AnimationCurve DamageReduction;
-    [SerializeField] private AnimationCurve DamageReductionShield;
-    [SerializeField] private UnityEvent HitEvents;
-    [SerializeField] private UnityEvent HealEvents;
-    [SerializeField] private UnityEvent DieEvents;
+
+    [SerializeField, HideInInspector] public float MaxShield;
+    [SerializeField, HideInInspector] public float Armor;
+    [SerializeField, HideInInspector] public AnimationCurve DamageReduction;
+    [SerializeField, HideInInspector] public AnimationCurve DamageReductionShield;
+    [SerializeField, HideInInspector] public UnityEvent HitEvents;
+    [SerializeField, HideInInspector] public UnityEvent HealEvents;
+    [SerializeField, HideInInspector] public UnityEvent DieEvents;
 
     private float health;
     private float shield;
