@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -24,40 +23,103 @@ public class Health : MonoBehaviour
     private float health;
     private float shield;
 
+    private void Start()
+    {
+        health = MaxHealth;
+        shield = MaxShield;
+    }
+
     public void TakeDamage(float damage)
     {
+        if (UseShield && shield > 0)
+        {
+            shield -= ApplyDamageReductionShield(damage);
 
+            if (shield < 0)
+            {
+                float overkillDamage = damage + shield;
+                health -= ApplyDamageReduction(overkillDamage);
+            }
+        }
+        else
+        {
+            health -= ApplyDamageReduction(damage);
+        }
+
+        if (health <= 0)
+        {
+            DieEvents.Invoke();
+        }
+        else
+        {
+            HitEvents.Invoke();
+        }
     }
     public void Heal(float hp)
     {
+        health += hp;
 
+        if (health > MaxHealth)
+        {
+            health = MaxHealth;
+        }
+
+        HealEvents.Invoke();
     }
     public void HealShield(float hp)
     {
+        shield += hp;
 
+        if (shield > MaxShield)
+        {
+            shield = MaxShield;
+        }
     }
     public void AddArmor(float armor)
     {
-
+        Armor += armor;
     }
     public void RemoveArmor(float armor)
     {
+        Armor -= armor;
 
+        if (Armor < 0)
+        {
+            Armor = 0;
+        }
     }
-    public void StartDamageOverTime(float tickTime, float totalTime, float tickDamage)
+    public void StartDamageOverTime(float tickTime, int totalTicks, float tickDamage)
     {
-
+        StartCoroutine(DamageOverTime(tickTime, totalTicks, tickDamage));
     }
     private float ApplyDamageReduction(float damage)
     {
-        return 0;
+        if (!UseArmor)
+        {
+            return damage;
+        }
+
+        damage = damage - (damage / 100 * DamageReduction.Evaluate(Armor));
+
+        return damage;
     }
     private float ApplyDamageReductionShield(float damage)
     {
-        return 0;
+        if (!UseArmor)
+        {
+            return damage;
+        }
+
+        damage = damage - (damage / 100 * DamageReductionShield.Evaluate(Armor));
+
+        return damage;
     }
-    IEnumerator DamageOverTime(float tickTime, float totalTime, float tickDamage)
+    IEnumerator DamageOverTime(float tickTime, int totalTicks, float tickDamage)
     {
-        return null;
+        for (int i = 0; i < totalTicks; i++)
+        {
+            TakeDamage(tickDamage);
+            yield return new WaitForSeconds(tickTime);
+        }
     }
 }
