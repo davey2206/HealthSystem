@@ -4,28 +4,46 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField, HideInInspector] public bool UseShield;
-    [SerializeField, HideInInspector] public bool UseArmor;
-    [SerializeField, HideInInspector] public bool UseEvents;
-    [SerializeField, HideInInspector] public float MaxHealth;
-    [SerializeField, HideInInspector] public float MaxShield;
-    [SerializeField, HideInInspector] public float Armor;
-    [SerializeField, HideInInspector] public AnimationCurve DamageReduction;
-    [SerializeField, HideInInspector] public AnimationCurve DamageReductionShield;
-    [SerializeField, HideInInspector] public UnityEvent HitEvents;
-    [SerializeField, HideInInspector] public UnityEvent HealEvents;
-    [SerializeField, HideInInspector] public UnityEvent DieEvents;
+    [HideInInspector] public bool UseShield;
+    [HideInInspector] public bool UseArmor;
+    [HideInInspector] public bool UseRegen;
+    [HideInInspector] public bool UseEvents;
+    [HideInInspector] public float MaxHealth;
+    [HideInInspector] public float MaxShield;
+    [HideInInspector] public float Armor;
+    [HideInInspector] public AnimationCurve DamageReduction;
+    [HideInInspector] public AnimationCurve DamageReductionShield;
+    [HideInInspector] public float RegenAmount;
+    [HideInInspector] public float RegenSpeed;
+    [HideInInspector] public float RegenCooldown;
+    [HideInInspector] public UnityEvent HitEvents;
+    [HideInInspector] public UnityEvent HealEvents;
+    [HideInInspector] public UnityEvent DieEvents;
 
     private float health;
     private float shield;
+    private bool canRegen;
+    private Coroutine regenStart;
 
     private void Start()
     {
         health = MaxHealth;
         shield = MaxShield;
+        if (UseRegen)
+        {
+            canRegen = true;
+            regenStart = StartCoroutine(StartRegen());
+        }
     }
     public void TakeDamage(float damage)
     {
+        if (UseRegen)
+        {
+            StopCoroutine(regenStart);
+            canRegen = false;
+            regenStart = StartCoroutine(StartRegen());
+        }
+
         if (UseShield && shield > 0)
         {
             shield -= ApplyDamageReductionShield(damage);
@@ -108,6 +126,20 @@ public class Health : MonoBehaviour
         damage = damage - (damage / 100 * DamageReductionShield.Evaluate(Armor));
 
         return damage;
+    }
+    IEnumerator StartRegen()
+    {
+        yield return new WaitForSeconds(RegenCooldown);
+        canRegen = true;
+        StartCoroutine(RegenHealth());
+    }
+    IEnumerator RegenHealth()
+    {
+        while (canRegen)
+        {
+            Heal(RegenAmount);
+            yield return new WaitForSeconds(RegenSpeed);
+        }
     }
     IEnumerator DamageOverTime(float tickTime, int totalTicks, float tickDamage)
     {

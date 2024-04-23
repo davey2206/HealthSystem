@@ -340,6 +340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UseShield: 0
   UseArmor: 0
+  UseRegen: 0
   UseEvents: 0
   MaxHealth: 0
   MaxShield: 0
@@ -356,6 +357,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  RegenAmount: 0
+  RegenSpeed: 0
+  RegenCooldown: 0
   HitEvents:
     m_PersistentCalls:
       m_Calls: []

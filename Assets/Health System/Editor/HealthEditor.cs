@@ -16,6 +16,11 @@ public class HealthEditor : Editor
     SerializedProperty DamageReductionProperty;
     SerializedProperty DamageReductionShieldProperty;
 
+    SerializedProperty UseRegenProperty;
+    SerializedProperty RegenAmountProperty;
+    SerializedProperty RegenSpeedProperty;
+    SerializedProperty RegenCooldownProperty;
+
     SerializedProperty UseEventProperty;
     SerializedProperty HitEventProperty;
     SerializedProperty HealEventsProperty;
@@ -34,9 +39,15 @@ public class HealthEditor : Editor
         HitEventProperty = serializedObject.FindProperty(nameof(Health.HitEvents));
         HealEventsProperty = serializedObject.FindProperty(nameof(Health.HealEvents));
         DieEventsProperty = serializedObject.FindProperty(nameof(Health.DieEvents));
+
+        RegenAmountProperty = serializedObject.FindProperty(nameof(Health.RegenAmount));
+        RegenSpeedProperty = serializedObject.FindProperty(nameof(Health.RegenSpeed));
+        RegenCooldownProperty = serializedObject.FindProperty(nameof(Health.RegenCooldown));
+
         UseShieldProperty = serializedObject.FindProperty(nameof(Health.UseShield));
         UseArmorProperty = serializedObject.FindProperty(nameof(Health.UseArmor));
         UseEventProperty = serializedObject.FindProperty(nameof(Health.UseEvents));
+        UseRegenProperty = serializedObject.FindProperty(nameof(Health.UseRegen));
     }
 
     public override void OnInspectorGUI()
@@ -54,6 +65,7 @@ public class HealthEditor : Editor
             EditorGUILayout.PropertyField(UseShieldProperty);
             EditorGUILayout.PropertyField(UseArmorProperty);
             EditorGUILayout.PropertyField(UseEventProperty);
+            EditorGUILayout.PropertyField(UseRegenProperty);
         }
 
         EditorGUILayout.EndFoldoutHeaderGroup();
@@ -96,6 +108,15 @@ public class HealthEditor : Editor
             EditorGUILayout.Space();
         }
 
+        //regen
+        if (UseRegenProperty.boolValue)
+        {
+            EditorGUILayout.LabelField("Regen", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(RegenAmountProperty);
+            EditorGUILayout.PropertyField(RegenSpeedProperty);
+            EditorGUILayout.PropertyField(RegenCooldownProperty);
+        }
+
         //Events
         if (UseEventProperty.boolValue)
         {
@@ -107,6 +128,11 @@ public class HealthEditor : Editor
             EditorGUILayout.Space();
         }
 
+        if (GUILayout.Button("test"))
+        {
+            Health hp = target as Health;
+            hp.TakeDamage(5);
+        }
         serializedObject.ApplyModifiedProperties();
     }
 }
