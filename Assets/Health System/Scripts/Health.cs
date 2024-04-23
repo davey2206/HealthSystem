@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,6 +9,7 @@ public class Health : MonoBehaviour
     [HideInInspector] public bool UseArmor;
     [HideInInspector] public bool UseRegen;
     [HideInInspector] public bool UseEvents;
+    [HideInInspector] public bool DebugButtons;
     [HideInInspector] public float MaxHealth;
     [HideInInspector] public float MaxShield;
     [HideInInspector] public float Armor;
@@ -19,6 +21,9 @@ public class Health : MonoBehaviour
     [HideInInspector] public UnityEvent HitEvents;
     [HideInInspector] public UnityEvent HealEvents;
     [HideInInspector] public UnityEvent DieEvents;
+
+    public float CurrentHealth => health;
+    public float CurrentShield => shield;
 
     private float health;
     private float shield;
@@ -52,6 +57,7 @@ public class Health : MonoBehaviour
             {
                 float overkillDamage = damage + shield;
                 health -= ApplyDamageReduction(overkillDamage);
+                shield = 0;
             }
         }
         else

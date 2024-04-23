@@ -342,8 +342,9 @@ MonoBehaviour:
   UseArmor: 0
   UseRegen: 0
   UseEvents: 0
-  MaxHealth: 0
-  MaxShield: 0
+  DebugButtons: 0
+  MaxHealth: 100
+  MaxShield: 15
   Armor: 0
   DamageReduction:
     serializedVersion: 2
@@ -357,9 +358,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  RegenAmount: 0
-  RegenSpeed: 0
-  RegenCooldown: 0
+  RegenAmount: 1
+  RegenSpeed: 0.5
+  RegenCooldown: 2
   HitEvents:
     m_PersistentCalls:
       m_Calls: []

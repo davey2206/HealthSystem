@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [CustomEditor(typeof(Health))]
 public class HealthEditor : Editor
 {
+    Health hp;
+
     SerializedProperty HealthProperty;
 
     SerializedProperty UseShieldProperty;
@@ -25,6 +29,8 @@ public class HealthEditor : Editor
     SerializedProperty HitEventProperty;
     SerializedProperty HealEventsProperty;
     SerializedProperty DieEventsProperty;
+
+    SerializedProperty DebugButtonProperty;
 
     bool showOptions = false;
 
@@ -48,14 +54,30 @@ public class HealthEditor : Editor
         UseArmorProperty = serializedObject.FindProperty(nameof(Health.UseArmor));
         UseEventProperty = serializedObject.FindProperty(nameof(Health.UseEvents));
         UseRegenProperty = serializedObject.FindProperty(nameof(Health.UseRegen));
+
+        DebugButtonProperty = serializedObject.FindProperty(nameof(Health.DebugButtons));
     }
 
     public override void OnInspectorGUI()
     {
+        hp = (Health)target;
+
         DrawDefaultInspector();
 
-        serializedObject.Update();
+        if (UseShieldProperty.boolValue)
+        {
+            EditorGUI.ProgressBar(GUILayoutUtility.GetRect(25, 25, "TextField"), hp.CurrentHealth / hp.MaxHealth, hp.CurrentHealth + " Health");
+            EditorGUILayout.Space();
+            EditorGUI.ProgressBar(GUILayoutUtility.GetRect(25, 25, "TextField"), hp.CurrentShield / hp.MaxShield, hp.CurrentShield + " Shield");
+        }
+        else
+        {
+            EditorGUI.ProgressBar(GUILayoutUtility.GetRect(50, 50, "TextField"), hp.CurrentHealth / hp.MaxHealth, hp.CurrentHealth + " Health");
+        }
 
+        EditorGUILayout.Space();
+
+        serializedObject.Update();
 
         //Options
         showOptions = EditorGUILayout.BeginFoldoutHeaderGroup(showOptions, "Options");
@@ -66,6 +88,7 @@ public class HealthEditor : Editor
             EditorGUILayout.PropertyField(UseArmorProperty);
             EditorGUILayout.PropertyField(UseEventProperty);
             EditorGUILayout.PropertyField(UseRegenProperty);
+            EditorGUILayout.PropertyField(DebugButtonProperty);
         }
 
         EditorGUILayout.EndFoldoutHeaderGroup();
@@ -128,6 +151,36 @@ public class HealthEditor : Editor
             EditorGUILayout.Space();
         }
 
+        if (DebugButtonProperty.boolValue)
+        {
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Take 10% Damage"))
+            {
+                float damage = hp.MaxHealth * 0.1f;
+                hp.TakeDamage(damage);
+            }
+
+            if (GUILayout.Button("Heal 10% health"))
+            {
+                float health = hp.MaxHealth * 0.1f;
+                hp.Heal(health);
+            }
+            if (GUILayout.Button("Heal 10% Shield"))
+            {
+                float shield = hp.MaxShield * 0.1f;
+                hp.HealShield(shield);
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
         serializedObject.ApplyModifiedProperties();
+
+        if (EditorApplication.isPlaying)
+        {
+            Repaint();
+        }
     }
 }
