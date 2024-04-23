@@ -128,11 +128,6 @@ public class HealthEditor : Editor
             EditorGUILayout.Space();
         }
 
-        if (GUILayout.Button("test"))
-        {
-            Health hp = target as Health;
-            hp.TakeDamage(5);
-        }
         serializedObject.ApplyModifiedProperties();
     }
 }
