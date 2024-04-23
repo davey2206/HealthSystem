@@ -4,14 +4,10 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
-    [Header("Options")]
-    [SerializeField] public bool UseShield;
-    [SerializeField] public bool UseArmor;
-    [SerializeField] public bool UseEvents;
-
-    [Header("Health")]
-    [SerializeField] private float MaxHealth;
-
+    [SerializeField, HideInInspector] public bool UseShield;
+    [SerializeField, HideInInspector] public bool UseArmor;
+    [SerializeField, HideInInspector] public bool UseEvents;
+    [SerializeField, HideInInspector] public float MaxHealth;
     [SerializeField, HideInInspector] public float MaxShield;
     [SerializeField, HideInInspector] public float Armor;
     [SerializeField, HideInInspector] public AnimationCurve DamageReduction;
@@ -28,7 +24,6 @@ public class Health : MonoBehaviour
         health = MaxHealth;
         shield = MaxShield;
     }
-
     public void TakeDamage(float damage)
     {
         if (UseShield && shield > 0)
