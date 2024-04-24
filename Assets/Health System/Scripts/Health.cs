@@ -18,9 +18,16 @@ public class Health : MonoBehaviour
     [HideInInspector] public float RegenAmount;
     [HideInInspector] public float RegenSpeed;
     [HideInInspector] public float RegenCooldown;
-    [HideInInspector] public UnityEvent HitEvents;
-    [HideInInspector] public UnityEvent HealEvents;
-    [HideInInspector] public UnityEvent DieEvents;
+    [HideInInspector] public bool HealthMustBeFull;
+    [HideInInspector] public float RegenShieldAmount;
+    [HideInInspector] public float RegenShieldSpeed;
+    [HideInInspector] public float RegenShieldCooldown;
+    [HideInInspector] public UnityEvent<float, float, float> HitEvents;
+    [HideInInspector] public UnityEvent<float, float, float> HealEvents;
+    [HideInInspector] public UnityEvent<float, float, float> DieEvents;
+    [HideInInspector] public UnityEvent<float, float, float> DestroyShieldEvents;
+    [HideInInspector] public UnityEvent<float, float, float> HitShieldEvents;
+    [HideInInspector] public UnityEvent<float, float, float> HealShieldEvents;
 
     public float CurrentHealth => health;
     public float CurrentShield => shield;
@@ -28,26 +35,23 @@ public class Health : MonoBehaviour
     private float health;
     private float shield;
     private bool canRegen;
+    private bool canShieldRegen;
     private Coroutine regenStart;
+    private Coroutine regenShieldStart;
 
     private void Start()
     {
         health = MaxHealth;
         shield = MaxShield;
-        if (UseRegen)
-        {
-            canRegen = true;
-            regenStart = StartCoroutine(StartRegen());
-        }
+
+        canRegen = true;
+        canShieldRegen = true;
+        regenStart = StartCoroutine(StartRegen());
+        regenShieldStart = StartCoroutine(StartShieldRegen());
     }
     public void TakeDamage(float damage)
     {
-        if (UseRegen)
-        {
-            StopCoroutine(regenStart);
-            canRegen = false;
-            regenStart = StartCoroutine(StartRegen());
-        }
+        checkRegen();
 
         if (UseShield && shield > 0)
         {
@@ -55,9 +59,14 @@ public class Health : MonoBehaviour
 
             if (shield < 0)
             {
-                float overkillDamage = damage + shield;
-                health -= ApplyDamageReduction(overkillDamage);
+                health -= ApplyDamageReduction(Mathf.Abs(shield));
                 shield = 0;
+
+                DestroyShieldEvents.Invoke(damage, shield, MaxShield);
+            }
+            else
+            {
+                HitShieldEvents.Invoke(damage, shield, MaxShield);
             }
         }
         else
@@ -67,11 +76,13 @@ public class Health : MonoBehaviour
 
         if (health <= 0)
         {
-            DieEvents.Invoke();
+            health = 0;
+            DieEvents.Invoke(damage, health, MaxHealth);
         }
-        else
+        
+        if(health > 0 && shield <= 0)
         {
-            HitEvents.Invoke();
+            HitEvents.Invoke(damage, health, MaxHealth);
         }
     }
     public void Heal(float hp)
@@ -83,7 +94,7 @@ public class Health : MonoBehaviour
             health = MaxHealth;
         }
 
-        HealEvents.Invoke();
+        HealEvents.Invoke(hp, health, MaxHealth);
     }
     public void HealShield(float hp)
     {
@@ -93,6 +104,8 @@ public class Health : MonoBehaviour
         {
             shield = MaxShield;
         }
+
+        HealShieldEvents.Invoke(hp, shield, MaxShield);
     }
     public void AddArmor(float armor)
     {
@@ -110,6 +123,16 @@ public class Health : MonoBehaviour
     public void StartDamageOverTime(float tickTime, int totalTicks, float tickDamage)
     {
         StartCoroutine(DamageOverTime(tickTime, totalTicks, tickDamage));
+    }
+    private void checkRegen()
+    {
+        StopCoroutine(regenStart);
+        canRegen = false;
+        regenStart = StartCoroutine(StartRegen());
+
+        StopCoroutine(regenShieldStart);
+        canShieldRegen = false;
+        regenShieldStart = StartCoroutine(StartShieldRegen());
     }
     private float ApplyDamageReduction(float damage)
     {
@@ -133,21 +156,56 @@ public class Health : MonoBehaviour
 
         return damage;
     }
-    IEnumerator StartRegen()
+    private IEnumerator StartRegen()
     {
         yield return new WaitForSeconds(RegenCooldown);
         canRegen = true;
         StartCoroutine(RegenHealth());
     }
-    IEnumerator RegenHealth()
+    private IEnumerator RegenHealth()
     {
         while (canRegen)
         {
-            Heal(RegenAmount);
+            if (UseRegen)
+            {
+                Heal(RegenAmount);
+            }
+            if (RegenSpeed <= 0)
+            {
+                RegenSpeed = 0.1f;
+            }
             yield return new WaitForSeconds(RegenSpeed);
         }
     }
-    IEnumerator DamageOverTime(float tickTime, int totalTicks, float tickDamage)
+    private IEnumerator StartShieldRegen()
+    {
+        yield return new WaitForSeconds(RegenShieldCooldown);
+        canShieldRegen = true;
+        StartCoroutine(RegenShieldHealth());
+    }
+    private IEnumerator RegenShieldHealth()
+    {
+        while (canShieldRegen)
+        {
+            if (HealthMustBeFull && health == MaxHealth && UseRegen)
+            {
+                HealShield(RegenShieldAmount);
+            }
+
+            if(!HealthMustBeFull && UseRegen)
+            {
+                HealShield(RegenShieldAmount);
+            }
+
+            if (RegenShieldSpeed <= 0)
+            {
+                RegenShieldSpeed = 0.1f;
+            }
+
+            yield return new WaitForSeconds(RegenShieldSpeed);
+        }
+    }
+    private IEnumerator DamageOverTime(float tickTime, int totalTicks, float tickDamage)
     {
         for (int i = 0; i < totalTicks; i++)
         {

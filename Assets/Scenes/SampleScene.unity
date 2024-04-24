@@ -338,29 +338,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f56bc03a16a6bfe489fb66ca262d94cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseShield: 0
-  UseArmor: 0
-  UseRegen: 0
-  UseEvents: 0
-  DebugButtons: 0
+  UseShield: 1
+  UseArmor: 1
+  UseRegen: 1
+  UseEvents: 1
+  DebugButtons: 1
   MaxHealth: 100
   MaxShield: 15
-  Armor: 0
+  Armor: 6
   DamageReduction:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 8
+      outSlope: 8
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 10
+      value: 80
+      inSlope: 8
+      outSlope: 8
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   DamageReductionShield:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 8
+      outSlope: 8
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 10
+      value: 80
+      inSlope: 8
+      outSlope: 8
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   RegenAmount: 1
   RegenSpeed: 0.5
   RegenCooldown: 2
+  HealthMustBeFull: 1
+  RegenShieldAmount: 1
+  RegenShieldSpeed: 0.5
+  RegenShieldCooldown: 2
   HitEvents:
     m_PersistentCalls:
       m_Calls: []
@@ -368,6 +408,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   DieEvents:
+    m_PersistentCalls:
+      m_Calls: []
+  DestroyShieldEvents:
+    m_PersistentCalls:
+      m_Calls: []
+  HitShieldEvents:
+    m_PersistentCalls:
+      m_Calls: []
+  HealShieldEvents:
     m_PersistentCalls:
       m_Calls: []
 --- !u!4 &1272535995

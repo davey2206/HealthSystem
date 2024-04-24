@@ -24,31 +24,50 @@ public class HealthEditor : Editor
     SerializedProperty RegenAmountProperty;
     SerializedProperty RegenSpeedProperty;
     SerializedProperty RegenCooldownProperty;
+    SerializedProperty HealthMustBeFullProperty;
+    SerializedProperty RegenShieldAmountProperty;
+    SerializedProperty RegenShieldSpeedProperty;
+    SerializedProperty RegenShieldCooldownProperty;
 
     SerializedProperty UseEventProperty;
     SerializedProperty HitEventProperty;
     SerializedProperty HealEventsProperty;
     SerializedProperty DieEventsProperty;
+    SerializedProperty HitShieldEventProperty;
+    SerializedProperty HealShieldEventsProperty;
+    SerializedProperty DestroyShieldEventsProperty;
 
     SerializedProperty DebugButtonProperty;
 
     bool showOptions = false;
+    bool showEvents = false;
+    bool showShieldEvents = false;
 
     private void OnEnable()
     {
         //get properties from health script
         HealthProperty = serializedObject.FindProperty(nameof(Health.MaxHealth));
         ShieldProperty = serializedObject.FindProperty(nameof(Health.MaxShield));
+
         ArmorProperty = serializedObject.FindProperty(nameof(Health.Armor));
         DamageReductionProperty = serializedObject.FindProperty(nameof(Health.DamageReduction));
         DamageReductionShieldProperty = serializedObject.FindProperty(nameof(Health.DamageReductionShield));
+
         HitEventProperty = serializedObject.FindProperty(nameof(Health.HitEvents));
         HealEventsProperty = serializedObject.FindProperty(nameof(Health.HealEvents));
         DieEventsProperty = serializedObject.FindProperty(nameof(Health.DieEvents));
+        HitShieldEventProperty = serializedObject.FindProperty(nameof(Health.HitShieldEvents));
+        HealShieldEventsProperty = serializedObject.FindProperty(nameof(Health.HealShieldEvents));
+        DestroyShieldEventsProperty = serializedObject.FindProperty(nameof(Health.DestroyShieldEvents));
 
         RegenAmountProperty = serializedObject.FindProperty(nameof(Health.RegenAmount));
         RegenSpeedProperty = serializedObject.FindProperty(nameof(Health.RegenSpeed));
         RegenCooldownProperty = serializedObject.FindProperty(nameof(Health.RegenCooldown));
+
+        HealthMustBeFullProperty = serializedObject.FindProperty(nameof(Health.HealthMustBeFull));
+        RegenShieldAmountProperty = serializedObject.FindProperty(nameof(Health.RegenShieldAmount));
+        RegenShieldSpeedProperty = serializedObject.FindProperty(nameof(Health.RegenShieldSpeed));
+        RegenShieldCooldownProperty = serializedObject.FindProperty(nameof(Health.RegenShieldCooldown));
 
         UseShieldProperty = serializedObject.FindProperty(nameof(Health.UseShield));
         UseArmorProperty = serializedObject.FindProperty(nameof(Health.UseArmor));
@@ -132,21 +151,77 @@ public class HealthEditor : Editor
         }
 
         //regen
-        if (UseRegenProperty.boolValue)
+        if (UseRegenProperty.boolValue && !UseShieldProperty.boolValue)
         {
             EditorGUILayout.LabelField("Regen", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(RegenAmountProperty);
             EditorGUILayout.PropertyField(RegenSpeedProperty);
             EditorGUILayout.PropertyField(RegenCooldownProperty);
+
+            EditorGUILayout.Space();
+        }
+
+        if (UseRegenProperty.boolValue && UseShieldProperty.boolValue)
+        {
+            EditorGUILayout.LabelField("Regen", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(RegenAmountProperty);
+            EditorGUILayout.PropertyField(RegenSpeedProperty);
+            EditorGUILayout.PropertyField(RegenCooldownProperty);
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Shield Regen", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(HealthMustBeFullProperty);
+            EditorGUILayout.PropertyField(RegenShieldAmountProperty);
+            EditorGUILayout.PropertyField(RegenShieldSpeedProperty);
+            EditorGUILayout.PropertyField(RegenShieldCooldownProperty);
+
+            EditorGUILayout.Space();
         }
 
         //Events
-        if (UseEventProperty.boolValue)
+        if (UseEventProperty.boolValue && !UseShieldProperty.boolValue)
         {
-            EditorGUILayout.LabelField("Events", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(HitEventProperty);
-            EditorGUILayout.PropertyField(HealEventsProperty);
-            EditorGUILayout.PropertyField(DieEventsProperty);
+            showEvents = EditorGUILayout.BeginFoldoutHeaderGroup(showEvents, "Events");
+
+            if (showEvents)
+            {
+                EditorGUILayout.PropertyField(HitEventProperty);
+                EditorGUILayout.PropertyField(HealEventsProperty);
+                EditorGUILayout.PropertyField(DieEventsProperty);
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
+            
+
+            EditorGUILayout.Space();
+        }
+
+        if (UseEventProperty.boolValue && UseShieldProperty.boolValue)
+        {
+            showEvents = EditorGUILayout.BeginFoldoutHeaderGroup(showEvents, "Events");
+
+            if (showEvents)
+            {
+                EditorGUILayout.PropertyField(HitEventProperty);
+                EditorGUILayout.PropertyField(HealEventsProperty);
+                EditorGUILayout.PropertyField(DieEventsProperty);
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
+
+            EditorGUILayout.Space();
+
+            showShieldEvents = EditorGUILayout.BeginFoldoutHeaderGroup(showShieldEvents, "Shield Events");
+
+            if (showShieldEvents)
+            {
+                EditorGUILayout.PropertyField(HitShieldEventProperty);
+                EditorGUILayout.PropertyField(HealShieldEventsProperty);
+                EditorGUILayout.PropertyField(DestroyShieldEventsProperty);
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
 
             EditorGUILayout.Space();
         }
