@@ -36,8 +36,10 @@ public class Health : MonoBehaviour
     private float shield;
     private bool canRegen;
     private bool canShieldRegen;
+    private bool dead;
     private Coroutine regenStart;
     private Coroutine regenShieldStart;
+    private Coroutine damageOverTime;
 
     private void Start()
     {
@@ -77,27 +79,36 @@ public class Health : MonoBehaviour
         if (health <= 0)
         {
             health = 0;
+            dead = true;
             DieEvents.Invoke(damage, health, MaxHealth);
         }
         
-        if(health > 0 && shield <= 0)
+        if(health > 0 && shield <= 0 && health != MaxHealth)
         {
             HitEvents.Invoke(damage, health, MaxHealth);
         }
     }
     public void Heal(float hp)
     {
+        if (health != MaxHealth)
+        {
+            HealEvents.Invoke(hp, health, MaxHealth);
+        }
+
         health += hp;
 
         if (health > MaxHealth)
         {
             health = MaxHealth;
         }
-
-        HealEvents.Invoke(hp, health, MaxHealth);
     }
     public void HealShield(float hp)
     {
+        if (shield != MaxShield)
+        {
+            HealShieldEvents.Invoke(hp, shield, MaxShield);
+        }
+
         shield += hp;
 
         if (shield > MaxShield)
@@ -105,7 +116,6 @@ public class Health : MonoBehaviour
             shield = MaxShield;
         }
 
-        HealShieldEvents.Invoke(hp, shield, MaxShield);
     }
     public void AddArmor(float armor)
     {
@@ -122,7 +132,11 @@ public class Health : MonoBehaviour
     }
     public void StartDamageOverTime(float tickTime, int totalTicks, float tickDamage)
     {
-        StartCoroutine(DamageOverTime(tickTime, totalTicks, tickDamage));
+        if (damageOverTime != null)
+        {
+            StopCoroutine(damageOverTime);
+        }
+        damageOverTime = StartCoroutine(DamageOverTime(tickTime, totalTicks, tickDamage));
     }
     private void checkRegen()
     {
@@ -164,7 +178,7 @@ public class Health : MonoBehaviour
     }
     private IEnumerator RegenHealth()
     {
-        while (canRegen)
+        while (canRegen && !dead)
         {
             if (UseRegen)
             {
@@ -185,7 +199,7 @@ public class Health : MonoBehaviour
     }
     private IEnumerator RegenShieldHealth()
     {
-        while (canShieldRegen)
+        while (canShieldRegen && !dead)
         {
             if (HealthMustBeFull && health == MaxHealth && UseRegen)
             {
