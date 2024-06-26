@@ -5,11 +5,14 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
+    //options
     [HideInInspector] public bool UseShield;
     [HideInInspector] public bool UseArmor;
     [HideInInspector] public bool UseRegen;
     [HideInInspector] public bool UseEvents;
     [HideInInspector] public bool DebugButtons;
+
+    //stats
     [HideInInspector] public float MaxHealth;
     [HideInInspector] public float MaxShield;
     [HideInInspector] public float Armor;
@@ -25,9 +28,11 @@ public class Health : MonoBehaviour
     [HideInInspector] public UnityEvent<float, float, float> HitEvents;
     [HideInInspector] public UnityEvent<float, float, float> HealEvents;
     [HideInInspector] public UnityEvent<float, float, float> DieEvents;
+    [HideInInspector] public UnityEvent<float, float> SetupEvents;
     [HideInInspector] public UnityEvent<float, float, float> DestroyShieldEvents;
     [HideInInspector] public UnityEvent<float, float, float> HitShieldEvents;
     [HideInInspector] public UnityEvent<float, float, float> HealShieldEvents;
+    [HideInInspector] public UnityEvent<float, float> SetupShieldEvents;
 
     public float CurrentHealth => health;
     public float CurrentShield => shield;
@@ -50,6 +55,13 @@ public class Health : MonoBehaviour
         canShieldRegen = true;
         regenStart = StartCoroutine(StartRegen());
         regenShieldStart = StartCoroutine(StartShieldRegen());
+
+        SetupEvents.Invoke(health, MaxHealth);
+
+        if (UseShield)
+        {
+            SetupShieldEvents.Invoke(shield, MaxShield);
+        }
     }
     public void TakeDamage(float damage)
     {
@@ -83,7 +95,7 @@ public class Health : MonoBehaviour
             DieEvents.Invoke(damage, health, MaxHealth);
         }
         
-        if(health > 0 && shield <= 0 && health != MaxHealth)
+        if(health > 0 && !UseShield && health != MaxHealth || health > 0 && shield <= 0 && health != MaxHealth)
         {
             HitEvents.Invoke(damage, health, MaxHealth);
         }

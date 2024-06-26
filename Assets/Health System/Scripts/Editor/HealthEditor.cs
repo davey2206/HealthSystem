@@ -33,9 +33,11 @@ public class HealthEditor : Editor
     SerializedProperty HitEventProperty;
     SerializedProperty HealEventsProperty;
     SerializedProperty DieEventsProperty;
+    SerializedProperty SetupEventsProperty;
     SerializedProperty HitShieldEventProperty;
     SerializedProperty HealShieldEventsProperty;
     SerializedProperty DestroyShieldEventsProperty;
+    SerializedProperty SetupShieldEventsProperty;
 
     SerializedProperty DebugButtonProperty;
 
@@ -59,6 +61,8 @@ public class HealthEditor : Editor
         HitShieldEventProperty = serializedObject.FindProperty(nameof(Health.HitShieldEvents));
         HealShieldEventsProperty = serializedObject.FindProperty(nameof(Health.HealShieldEvents));
         DestroyShieldEventsProperty = serializedObject.FindProperty(nameof(Health.DestroyShieldEvents));
+        SetupEventsProperty = serializedObject.FindProperty(nameof(Health.SetupEvents));
+        SetupShieldEventsProperty = serializedObject.FindProperty(nameof(Health.SetupShieldEvents));
 
         RegenAmountProperty = serializedObject.FindProperty(nameof(Health.RegenAmount));
         RegenSpeedProperty = serializedObject.FindProperty(nameof(Health.RegenSpeed));
@@ -189,6 +193,7 @@ public class HealthEditor : Editor
                 EditorGUILayout.PropertyField(HitEventProperty);
                 EditorGUILayout.PropertyField(HealEventsProperty);
                 EditorGUILayout.PropertyField(DieEventsProperty);
+                EditorGUILayout.PropertyField(SetupEventsProperty);
             }
 
             EditorGUILayout.EndFoldoutHeaderGroup();
@@ -206,6 +211,7 @@ public class HealthEditor : Editor
                 EditorGUILayout.PropertyField(HitEventProperty);
                 EditorGUILayout.PropertyField(HealEventsProperty);
                 EditorGUILayout.PropertyField(DieEventsProperty);
+                EditorGUILayout.PropertyField(SetupEventsProperty);
             }
 
             EditorGUILayout.EndFoldoutHeaderGroup();
@@ -219,6 +225,7 @@ public class HealthEditor : Editor
                 EditorGUILayout.PropertyField(HitShieldEventProperty);
                 EditorGUILayout.PropertyField(HealShieldEventsProperty);
                 EditorGUILayout.PropertyField(DestroyShieldEventsProperty);
+                EditorGUILayout.PropertyField(SetupShieldEventsProperty);
             }
 
             EditorGUILayout.EndFoldoutHeaderGroup();

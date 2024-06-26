@@ -6,6 +6,7 @@ using static UnityEngine.GraphicsBuffer;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] GameObject player;
+    [SerializeField] float damage = 25;
 
     private void Start()
     {
@@ -20,7 +21,7 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Health playerHealth = other.GetComponent<Health>();
-        playerHealth.TakeDamage(20);
+        playerHealth.TakeDamage(damage);
 
         Destroy(gameObject);
     }
