@@ -6,19 +6,19 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     //options
-    public bool UseSpriteBased;
-    public bool UseBarSmoothing;
+    [HideInInspector] public bool UseSpriteBased;
+    [HideInInspector] public bool UseBarSmoothing;
 
     //stats
     //Heart based
-    public GameObject Grid;
-    public Image HeartImage;
-    public Sprite Heart;
-    public Sprite EmptyHeart;
+    [HideInInspector] public GameObject Grid;
+    [HideInInspector] public Image HeartImage;
+    [HideInInspector] public Sprite Heart;
+    [HideInInspector] public Sprite EmptyHeart;
 
     //Bar Based
-    public Slider FillSlider;
-    public float BarSpeed = 20f;
+    [HideInInspector] public Slider FillSlider;
+    [HideInInspector] public float BarSpeed = 20f;
 
     private List<GameObject> Sprites = new List<GameObject>();
     private float currentHealth;
